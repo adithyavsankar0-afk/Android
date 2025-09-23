@@ -32,6 +32,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.duckduckgo.anvil.annotations.InjectWith
 import com.duckduckgo.app.tabs.BrowserNav
 import com.duckduckgo.autofill.api.AutofillFeature
+import com.duckduckgo.autofill.api.AutofillImportBookmarksLaunchSource.AutofillDevSettings
 import com.duckduckgo.autofill.api.AutofillScreenLaunchSource.InternalDevSettings
 import com.duckduckgo.autofill.api.AutofillScreens.AutofillPasswordsManagementScreen
 import com.duckduckgo.autofill.api.domain.app.LoginCredentials
@@ -61,6 +62,8 @@ import com.duckduckgo.autofill.impl.importing.takeout.zip.TakeoutBookmarkExtract
 import com.duckduckgo.autofill.impl.reporting.AutofillSiteBreakageReportingDataStore
 import com.duckduckgo.autofill.impl.store.InternalAutofillStore
 import com.duckduckgo.autofill.impl.store.NeverSavedSiteRepository
+import com.duckduckgo.autofill.impl.ui.credential.management.importbookmark.google.ImportFromGoogleBookmarksDialog
+import com.duckduckgo.autofill.impl.ui.credential.management.importbookmark.google.ImportFromGoogleBookmarksDialog.ImportBookmarksDialog.Companion.TAG
 import com.duckduckgo.autofill.impl.ui.credential.management.survey.AutofillSurveyStore
 import com.duckduckgo.autofill.internal.databinding.ActivityAutofillInternalSettingsBinding
 import com.duckduckgo.autofill.store.AutofillPrefsStore
@@ -382,6 +385,10 @@ class AutofillInternalSettingsActivity : DuckDuckGoActivity() {
                 val url = "https://takeout.google.com"
                 startActivity(browserNav.openInNewTab(this@AutofillInternalSettingsActivity, url))
             }
+        }
+        binding.importBookmarksLaunchGoogleTakeoutCustomFlowWithPreImportDialog.setClickListener {
+            val dialog = ImportFromGoogleBookmarksDialog.instance(AutofillDevSettings)
+            dialog.show(supportFragmentManager, TAG)
         }
         binding.importBookmarksLaunchGoogleTakeoutCustomFlow.setClickListener {
             lifecycleScope.launch {

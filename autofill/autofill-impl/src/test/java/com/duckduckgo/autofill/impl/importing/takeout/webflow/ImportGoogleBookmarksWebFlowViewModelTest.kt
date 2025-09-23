@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.duckduckgo.autofill.impl.importing.takeout.processor.BookmarkImportProcessor
 import com.duckduckgo.autofill.impl.importing.takeout.webflow.ImportGoogleBookmarksWebFlowViewModel.Command
+import com.duckduckgo.autofill.impl.importing.takeout.webflow.ImportGoogleBookmarksWebFlowViewModel.ViewState.HideWebPage
 import com.duckduckgo.autofill.impl.importing.takeout.webflow.ImportGoogleBookmarksWebFlowViewModel.ViewState.NavigatingBack
 import com.duckduckgo.autofill.impl.importing.takeout.webflow.ImportGoogleBookmarksWebFlowViewModel.ViewState.ShowWebPage
 import com.duckduckgo.autofill.impl.importing.takeout.webflow.ImportGoogleBookmarksWebFlowViewModel.ViewState.UserCancelledImportFlow
@@ -34,6 +35,57 @@ class ImportGoogleBookmarksWebFlowViewModelTest {
             bookmarkImportProcessor = mockBookmarkImportProcessor,
             bookmarkImportConfigStore = mock(),
         )
+
+    @Test
+    fun whenOnPageStartedWithTakeoutUrlThenHideWebPage() =
+        runTest {
+            testee.onPageStarted("https://takeout.google.com")
+            assertEquals(HideWebPage, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithUppercaseTakeoutUrlThenHideWebPage() =
+        runTest {
+            testee.onPageStarted("https://TAKEOUT.GOOGLE.COM")
+            assertEquals(HideWebPage, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithAccountsGoogleUrlThenShowWebPage() =
+        runTest {
+            testee.onPageStarted("https://accounts.google.com/signin")
+            assertEquals(ShowWebPage, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithExampleUrlThenShowWebPage() =
+        runTest {
+            testee.onPageStarted("https://example.com/page")
+            assertEquals(ShowWebPage, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithAccountsGoogleUrlContainingTakeoutInPathThenShowWebPage() =
+        runTest {
+            testee.onPageStarted("https://accounts.google.com/signin?continue=https://takeout.google.com")
+            assertEquals(ShowWebPage, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithNullUrlThenViewStateRemainsUnchanged() =
+        runTest {
+            val initialState = testee.viewState.value
+            testee.onPageStarted(null)
+            assertEquals(initialState, testee.viewState.value)
+        }
+
+    @Test
+    fun whenOnPageStartedWithMalformedUrlThenViewStateRemainsUnchanged() =
+        runTest {
+            val initialState = testee.viewState.value
+            testee.onPageStarted("not-a-valid-url")
+            assertEquals(initialState, testee.viewState.value)
+        }
 
     @Test
     fun whenFirstPageLoadingThenShowWebPageState() =

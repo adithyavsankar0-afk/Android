@@ -51,6 +51,7 @@
     <string name="autofillDevSettingsImportBookmarksTitle">Import Bookmarks</string>
     <string name="autofillDevSettingsImportBookmarksGoogleTakeoutOurAppTitle">Launch Google Takeout (normal tab)</string>
     <string name="autofillDevSettingsImportBookmarksGoogleTakeoutImportFlowTitle">Launch Bookmarks import flow</string>
+    <string name="autofillDevSettingsImportBookmarksGoogleTakeoutImportFlowWithDialogTitle">Launch Bookmarks import flow (with preimport dialog)</string>
     <string name="autofillDevSettingsImportBookmarksGoogleTakeoutImportZipDirectlyTitle">Choose zip file (downloaded from Takeout)</string>
     <string name="autofillDevSettingsImportBookmarksViewBookmarksTitle">View Bookmarks</string>
 

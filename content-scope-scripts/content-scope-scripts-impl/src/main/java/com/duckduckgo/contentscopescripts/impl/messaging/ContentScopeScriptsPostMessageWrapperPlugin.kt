@@ -19,7 +19,7 @@ package com.duckduckgo.contentscopescripts.impl.messaging
 import android.annotation.SuppressLint
 import android.webkit.WebView
 import com.duckduckgo.app.di.AppCoroutineScope
-import com.duckduckgo.contentscopescripts.impl.CoreContentScopeScripts
+import com.duckduckgo.contentscopescripts.api.CoreContentScopeScripts
 import com.duckduckgo.contentscopescripts.impl.WebViewCompatContentScopeScripts
 import com.duckduckgo.di.scopes.FragmentScope
 import com.duckduckgo.js.messaging.api.JsMessageHelper
@@ -51,12 +51,13 @@ class ContentScopeScriptsPostMessageWrapperPlugin @Inject constructor(
                 webMessagingPlugin.postMessage(webView, message)
             } else {
                 jsMessageHelper.sendSubscriptionEvent(
-                    subscriptionEvent = SubscriptionEvent(
-                        context = webMessagingPlugin.context,
-                        featureName = message.featureName,
-                        subscriptionName = message.subscriptionName,
-                        params = message.params,
-                    ),
+                    subscriptionEvent =
+                        SubscriptionEvent(
+                            context = webMessagingPlugin.context,
+                            featureName = message.featureName,
+                            subscriptionName = message.subscriptionName,
+                            params = message.params,
+                        ),
                     callbackName = coreContentScopeScripts.callbackName,
                     secret = coreContentScopeScripts.secret,
                     webView = webView,

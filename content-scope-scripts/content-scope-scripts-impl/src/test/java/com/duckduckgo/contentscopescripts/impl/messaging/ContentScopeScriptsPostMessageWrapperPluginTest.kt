@@ -2,7 +2,7 @@ package com.duckduckgo.contentscopescripts.impl.messaging
 
 import android.webkit.WebView
 import com.duckduckgo.common.test.CoroutineTestRule
-import com.duckduckgo.contentscopescripts.impl.CoreContentScopeScripts
+import com.duckduckgo.contentscopescripts.api.CoreContentScopeScripts
 import com.duckduckgo.contentscopescripts.impl.WebViewCompatContentScopeScripts
 import com.duckduckgo.js.messaging.api.JsMessageHelper
 import com.duckduckgo.js.messaging.api.SubscriptionEvent

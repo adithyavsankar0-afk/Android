@@ -60,6 +60,7 @@ import com.duckduckgo.app.browser.SpecialUrlDetector.UrlType.ShouldLaunchPrivacy
 import com.duckduckgo.app.browser.WebViewErrorResponse.LOADING
 import com.duckduckgo.app.browser.WebViewErrorResponse.OMITTED
 import com.duckduckgo.app.browser.addtohome.AddToHomeCapabilityDetector
+import com.duckduckgo.app.browser.animations.AddressBarTrackersAnimationFeatureToggle
 import com.duckduckgo.app.browser.applinks.AppLinksHandler
 import com.duckduckgo.app.browser.camera.CameraHardwareChecker
 import com.duckduckgo.app.browser.certificates.BypassedSSLCertificatesRepository
@@ -486,6 +487,7 @@ class BrowserTabViewModel @Inject constructor(
     private val vpnMenuStateProvider: VpnMenuStateProvider,
     private val webViewCompatWrapper: WebViewCompatWrapper,
     private val addDocumentStartJavascriptPlugins: PluginPoint<AddDocumentStartJavaScriptPlugin>,
+    private val addressBarTrackersAnimationFeatureToggle: AddressBarTrackersAnimationFeatureToggle,
 ) : ViewModel(),
     WebViewClientListener,
     EditSavedSiteListener,
@@ -1082,7 +1084,7 @@ class BrowserTabViewModel @Inject constructor(
 
         when (cta) {
             is DaxBubbleCta.DaxIntroSearchOptionsCta,
-            -> {
+                -> {
                 if (!ctaViewModel.isSuggestedSearchOption(query)) {
                     pixel.fire(ONBOARDING_SEARCH_CUSTOM, type = Unique())
                     viewModelScope.launch {
@@ -1093,7 +1095,7 @@ class BrowserTabViewModel @Inject constructor(
 
             is DaxBubbleCta.DaxIntroVisitSiteOptionsCta,
             is OnboardingDaxDialogCta.DaxSiteSuggestionsCta,
-            -> {
+                -> {
                 if (!ctaViewModel.isSuggestedSiteOption(query)) {
                     pixel.fire(ONBOARDING_VISIT_SITE_CUSTOM, type = Unique())
                 }
@@ -2117,9 +2119,9 @@ class BrowserTabViewModel @Inject constructor(
                     currentLoadingViewState().copy(
                         isLoading = true,
                         trackersAnimationEnabled = true,
-                    /*We set the progress to 20 so the omnibar starts animating and the user knows we are loading the page.
-                     * We don't show the browser until the page actually starts loading, to prevent previous sites from briefly
-                     * showing in case the URL was blocked locally and therefore never started to show*/
+                        /*We set the progress to 20 so the omnibar starts animating and the user knows we are loading the page.
+                         * We don't show the browser until the page actually starts loading, to prevent previous sites from briefly
+                         * showing in case the URL was blocked locally and therefore never started to show*/
                         progress = 20,
                         url = documentUrlString,
                     )
@@ -3263,7 +3265,10 @@ class BrowserTabViewModel @Inject constructor(
     }
 
     @SuppressLint("RequiresFeature", "PostMessageUsage") // it's already checked in isBlobDownloadWebViewFeatureEnabled
-    private fun postMessageToConvertBlobToDataUri(webView: WebView, url: String) {
+    private fun postMessageToConvertBlobToDataUri(
+        webView: WebView,
+        url: String
+    ) {
         viewModelScope.launch(dispatchers.main()) {
             // main because postMessage is not always safe in another thread
             for ((key, proxies) in fixedReplyProxyMap) {
@@ -4138,7 +4143,7 @@ class BrowserTabViewModel @Inject constructor(
             is OnboardingDaxDialogCta.DaxTrackersBlockedCta,
             is OnboardingDaxDialogCta.DaxNoTrackersCta,
             is OnboardingDaxDialogCta.DaxMainNetworkCta,
-            -> {
+                -> {
                 viewModelScope.launch {
                     val cta =
                         withContext(dispatchers.io()) {
@@ -4425,7 +4430,11 @@ class BrowserTabViewModel @Inject constructor(
 
     fun onAutoConsentPopUpHandled(isCosmetic: Boolean) {
         if (!currentBrowserViewState().maliciousSiteBlocked) {
-            command.postValue(ShowAutoconsentAnimation(isCosmetic))
+            if (addressBarTrackersAnimationFeatureToggle.feature().isEnabled() && trackersCount().isNotEmpty()) {
+                command.postValue(Command.EnqueueCookiesAnimation(isCosmetic))
+            } else {
+                command.postValue(ShowAutoconsentAnimation(isCosmetic))
+            }
         }
     }
 
@@ -4445,8 +4454,6 @@ class BrowserTabViewModel @Inject constructor(
     private fun launchBookmarksActivity() {
         command.value = LaunchBookmarksActivity
     }
-
-    fun trackersCount(): String = site?.trackerCount?.takeIf { it > 0 }?.toString() ?: ""
 
     fun resetTrackersCount() {
         site?.resetTrackingEvents()
@@ -4483,6 +4490,8 @@ class BrowserTabViewModel @Inject constructor(
     fun onDynamicLogoClicked(url: String) {
         command.value = Command.ShowSerpEasterEggLogo(url)
     }
+
+    private fun trackersCount(): String = site?.trackerCount?.takeIf { it > 0 }?.toString() ?: ""
 
     companion object {
         private const val FIXED_PROGRESS = 50

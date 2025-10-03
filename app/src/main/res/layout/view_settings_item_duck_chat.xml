@@ -14,11 +14,13 @@
   ~ limitations under the License.
   -->
 
-<com.duckduckgo.common.ui.view.listitem.OneLineListItem
+<com.duckduckgo.common.ui.view.listitem.SettingsListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/duckChatSetting"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:primaryText="@string/duck_chat_title"
-    app:leadingIcon="@drawable/ic_ai_chat_color_24"/>
+    app:leadingIcon="@drawable/ic_ai_chat_color_24"
+    app:pillIcon="newPill"
+    app:indicatorStatus="none" />

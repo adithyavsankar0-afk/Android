@@ -1,0 +1,11 @@
+design.txt
+
+ADD A NEW CONTACT
+  •Prompt user for name
+  •Prompt user for phone number
+  •Prompt user for email
+  •Store contact information in a data structure (e.g.,dictionary or list)
+
+VIEW CONTACT LIST
+  •Retrieve stored contact list
+  •Display each contact's information in a readable format

@@ -1,0 +1,6 @@
+{
+    "editor.gotoLocation.alternativeReferenceCommand": "editor.action.peekImplementation",
+    "editor.gotoLocation.multipleDefinitions": "goto",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
+}
